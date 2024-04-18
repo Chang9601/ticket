@@ -1,0 +1,202 @@
+services:
+  auth:
+    container_name: ticketing-auth
+    build:
+      context: .
+      dockerfile: ./apps/auth/Dockerfile
+      target: dev
+    command: sh -c '/wait && npm run start:dev auth'
+    env_file:
+      - ./apps/auth/.env
+    ports:
+      - '3000:3000'
+    volumes:
+      - .:/opt/app
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      disable: true
+  db:
+    container_name: ticketing-db
+    image: mysql:8.0.33-debian
+    cap_add:
+      - SYS_NICE
+    ports:
+      - '3306:3306'
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=ticketing
+    volumes:
+      - ./database-dump:/docker-entrypoint-initdb.d
+      - db:/var/lib/mysql
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'mysqladmin',
+          'ping',
+          '-h',
+          'localhost',
+          '-u',
+          'root',
+          '-p$$MYSQL_ROOT_PASSWORD',
+        ]
+      interval: 5s
+      timeout: 4s
+      retries: 5
+      start_period: 10m
+
+  app:
+    container_name: 4iz-app
+    image: 4iz
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: dev
+    # 개발 환경에서 사용되는 명령으로 CMD를 재정의한다.
+    command: sh -c '/wait && npm run start:dev'
+    # 포트는 따옴표를 추가한다.
+    ports:
+      - '3000:3000'
+    volumes:
+      - .:/opt/app
+      - ./package.json:/opt/package.json
+      - ./package-lock.json:/opt/package-lock.json
+    environment:
+      - NODE_ENV=development
+      - HOST=localhost
+      - PORT=3000
+      - DB_TYPE=mysql
+      # 서비스 이름이 호스트 이름이다.
+      # 개발 환경 시 db-dev, 테스트 환경 시 db-test.
+      - DB_HOST=db-dev
+      - DB_PORT=3306
+      - DB_DATABASE=4iz
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
+      - DB_LOGGING=true
+      # 나머지 환경 변수.
+      - JWT_ACCESS_TOKEN_SECRET=4iz-jwt-access-token
+      - JWT_ACCESS_TOKEN_EXPIRATION=1800000
+      - JWT_REFRESH_TOKEN_SECRET=4iz-jwt-refresh-token
+      - JWT_REFRESH_TOKEN_EXPIRATION=86400000
+      - CACHE_TTL=120
+      - CACHE_MAX=1000
+      - REDIS_HOST=cache
+      - REDIS_PORT=6379
+      # 사용자의 클라이언트 아이디, 클라이언트 시크릿, 콜백 URI 설정.
+      - NAVER_CLIENT_ID=naver-client-id
+      - NAVER_CLIENT_SECRET=naver-client-secret
+      - NAVER_CALLBACK_URI=naver-callback-uri
+      - GOOGLE_CLIENT_ID=google-client-id
+      - GOOGLE_CLIENT_SECRET=google-client-secret
+      - GOOGLE_CALLBACK_URI=google-callback-uri
+      - WAIT_HOSTS=db-dev:3306, db-test:3306
+      - WAIT_TIMEOUT=600
+      - WAIT_SLEEP_INTERVAL=10
+      - WAIT_HOST_CONNECT_TIMEOUT=10
+    # 서비스 사이의 의존성을 명시한다.
+    # app 서비스를 시작하기 전에 db-dev 서비스와 db-test 서비스가 준비될 때까지 기다리지 않는다. 단지 시작되기까지만 기다린다.
+    depends_on:
+      db-dev:
+        condition: service_healthy
+      db-test:
+        condition: service_healthy
+    healthcheck:
+      disable: true
+  # 개발 환경 DB.
+  db-dev:
+    container_name: 4iz-db-dev
+    image: mysql:8.0.33-debian
+    cap_add:
+      - SYS_NICE
+    ports:
+      - '3307:3306'
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      # 이미지 시작 시 생성할 데이터베이스의 이름을 지정한다.
+      - MYSQL_DATABASE=4iz
+    volumes:
+      # 데이터베이스와 데이터가 저장된 덤프 파일을 바인드 마운트한다.
+      - ./database-dump:/docker-entrypoint-initdb.d
+      - db-dev:/var/lib/mysql
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'mysqladmin',
+          'ping',
+          '-h',
+          'localhost',
+          '-u',
+          'root',
+          '-p$$MYSQL_ROOT_PASSWORD',
+        ]
+      interval: 5s
+      timeout: 4s
+      retries: 5
+      start_period: 10m
+
+  # 테스트 환경 DB(단위 테스트, E2E 테스트)
+  # 주의: 컨테이너 이름이 아니라 서비스 이름!
+  # 단위: docker compose exec app npm run test
+  # E2E: docker compose exec app npm run test:e2e
+  db-test:
+    container_name: 4iz-db-test
+    image: mysql:8.0.33-debian
+    cap_add:
+      - SYS_NICE
+    ports:
+      - '3308:3306'
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=4iz
+    volumes:
+      - ./database-dump:/docker-entrypoint-initdb.d
+      - db-test:/var/lib/mysql
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'mysqladmin',
+          'ping',
+          '-h',
+          'localhost',
+          '-u',
+          'root',
+          '-p$$MYSQL_ROOT_PASSWORD',
+        ]
+      interval: 5s
+      timeout: 4s
+      retries: 5
+      start_period: 10m
+
+  cache:
+    container_name: 4iz-cache
+    image: redis:7.2.4-alpine
+    ports:
+      - '6379:6379'
+
+  cache-commander:
+    container_name: 4iz-cache-commander
+    image: rediscommander/redis-commander:latest
+    environment:
+      - REDIS_HOSTS=local:cache:6379
+    ports:
+      - '8081:8081'
+    depends_on:
+      - cache
+
+volumes:
+  db-dev:
+  db-test:

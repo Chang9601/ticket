@@ -24,7 +24,7 @@ export class Code {
 
   public static readonly UNAUTHORIZED: CodeAttr = {
     code: 401,
-    message: '권한이 없습니다.',
+    message: '권한이 없습니다',
   };
 
   public static readonly NOT_FOUND: CodeAttr = {

@@ -25,7 +25,7 @@ export class AllExceptionFilter implements ExceptionFilter {
 
     const failure = this.handleException(exception);
 
-    const log = `코드: ${failure.metadata.code}.\n메시지: ${failure.metadata.message}.\n경로: ${request.path}.\n타임스탬프: ${failure.metadata.timestamp}.`;
+    const log = `코드: ${failure.metadata.code}.\n메시지: ${failure.metadata.message}.\n경로: ${request.path}.\n타임스탬프: ${failure.metadata.timestamp}.\n세부사항: ${failure.metadata.detail}.`;
 
     console.log(log);
     console.log(failure.metadata.stack);

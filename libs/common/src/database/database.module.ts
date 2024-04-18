@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { EntityClassOrSchema } from '@nestjs/typeorm/dist/interfaces/entity-class-or-schema.type';
 
 import { DatabaseConfig } from '../config/database-config';
-import { EntityClassOrSchema } from '@nestjs/typeorm/dist/interfaces/entity-class-or-schema.type';
 
 @Module({
   imports: [
@@ -21,7 +21,7 @@ import { EntityClassOrSchema } from '@nestjs/typeorm/dist/interfaces/entity-clas
   ],
 })
 export class DatabaseModule {
-  static forFeature(entities: EntityClassOrSchema[]) {
+  public static forFeature(entities: EntityClassOrSchema[]) {
     return TypeOrmModule.forFeature(entities);
   }
 }

@@ -27,6 +27,11 @@ export class Code {
     message: '권한이 없습니다',
   };
 
+  public static readonly FORBIDDEN: CodeAttr = {
+    code: 403,
+    message: '금지되어 있습니다',
+  };
+
   public static readonly NOT_FOUND: CodeAttr = {
     code: 404,
     message: '찾을 수 없습니다',
@@ -45,6 +50,7 @@ export class Code {
   public static toMessage: CodeToMessage = {
     [Code.BAD_REQUEST.code]: Code.BAD_REQUEST.message,
     [Code.UNAUTHORIZED.code]: Code.UNAUTHORIZED.message,
+    [Code.FORBIDDEN.code]: Code.FORBIDDEN.message,
   };
 
   public static toCode: MessageToCode = {};

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { TokenPayload, UserPayload } from '@app/common';
+
 import { ServerConfig } from './config/server-config';
 
 @Injectable()

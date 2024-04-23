@@ -1,6 +1,6 @@
-FROM node:16.15.0-slim as base
+FROM node:18.16.0-slim AS dev
 
-ARG NODE_ENV=production
+ARG NODE_ENV=development
 ENV NODE_ENV $NODE_ENV
 
 ARG PORT=3000
@@ -9,49 +9,30 @@ EXPOSE $PORT
 
 COPY --from=ghcr.io/ufoscout/docker-compose-wait:latest /wait /wait
 
-RUN npm i npm@8.5.5 -g
+RUN npm install npm@9.5.1 -g
 
 USER node
 
-WORKDIR /opt
+WORKDIR /opt/nest_app
 COPY --chown=node:node package*.json ./
-RUN npm ci && npm cache clean --force
+# @nestjs/cli, ts-loader와 같은 개발 의존성을 설치하지 않으면 오류가 발생하기 때문에 먼저 설치한다.
+RUN npm install && npm cache clean --force
 
-FROM base as dev
+COPY . .
+RUN npm run build
 
-ENV NODE_ENV=development
+FROM dev AS prod
 
-USER node
-
-WORKDIR /opt
-RUN npm install
-
-WORKDIR /opt/app
-CMD ["npm", "run", "start:dev"]
-
-FROM base as source
+ENV NODE_ENV=production
 
 USER node
 
-WORKDIR /opt/app
-COPY --chown=node:node . .
+WORKDIR /opt/nest_app
+RUN npm ci
 
-FROM source as test
-
-ENV NODE_ENV=development
-
-USER node
-
-COPY --from=dev /opt/node_modules /opt/node_modules
-CMD ["npm", "run", "test"] 
-
-FROM source as prod
-
-USER node
+COPY --from=dev /opt/nest_app/dist ./dist
 
 # ?
 # HEALTHCHECK --interval=30s CMD node /opt/nest_app/app/dist/healthcheck.js
 
-WORKDIR /opt/app
-RUN npm run build
 CMD ["node", "dist/apps/auth/main"]

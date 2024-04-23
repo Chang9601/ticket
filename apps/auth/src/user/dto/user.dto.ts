@@ -1,7 +1,7 @@
 export class UserDto {
-  email: string;
+  public email: string;
 
-  password: string;
+  public password: string;
 
   constructor(email?: string, password?: string) {
     this.email = email || '';

@@ -25,6 +25,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/auth/tsconfig.app.json"
       }
+    },
+    "ticket": {
+      "type": "application",
+      "root": "apps/ticket",
+      "entryFile": "main",
+      "sourceRoot": "apps/ticket/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/ticket/tsconfig.app.json"
+      }
     }
   },
   "monorepo": true,

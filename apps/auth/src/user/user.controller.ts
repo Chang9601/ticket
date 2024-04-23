@@ -8,12 +8,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
-import { ApiResponse, UserPayload, Code } from '@app/common';
+import { ApiResponse, UserPayload, Code, AuthUser } from '@app/common';
 
 import { UserDto } from './dto/user.dto';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { AuthUser } from '../decorator/auth-user.decorator';
 import { JwtAuthGuard } from '../guard/jwt-auth.guard';
 
 @Controller('/api/v1/users')

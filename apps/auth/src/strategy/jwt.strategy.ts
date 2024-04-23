@@ -1,7 +1,6 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { Request } from 'express';
 
 import { TokenPayload, UserPayload } from '@app/common';
 
@@ -13,8 +12,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly userService: UserService) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
-        (request: Request) => {
-          return request?.cookies?.AccessToken;
+        (request: any) => {
+          // JWT가 RPC 호출에서 오는 경우 쿠키 객체 내에 있지 않으며 요청 객체에 있다.
+          return request?.cookies?.AccessToken || request?.AccessToken;
         },
       ]),
       ignoreExpiration: false,

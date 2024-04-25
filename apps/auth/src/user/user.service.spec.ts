@@ -53,7 +53,7 @@ describe('UserService', () => {
       expect(userDto.email).toBe(userEntity.email);
     });
 
-    it('이미 사용 중인 이메일로 회원가입을 시도하기 때문에 실패한다.', async () => {
+    it('이미 사용 중인 이메일로 회원가입을 시도하기 때문에 사용자를 생성하는데 실패한다.', async () => {
       jest.spyOn(userRepository, 'exist').mockResolvedValueOnce(true);
 
       await expect(userService.create(createUserDto)).rejects.toThrow(

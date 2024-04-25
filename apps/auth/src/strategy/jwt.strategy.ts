@@ -13,7 +13,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: any) => {
-          // JWT가 RPC 호출에서 오는 경우 쿠키 객체 내에 있지 않으며 요청 객체에 있다.
+          /* JWT 토큰이 RPC 호출에서 오는 경우 cookies 객체 내에 있지 않으며 request 객체에 있다. */
           return request?.cookies?.AccessToken || request?.AccessToken;
         },
       ]),

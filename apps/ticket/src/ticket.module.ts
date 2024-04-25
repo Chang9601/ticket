@@ -26,6 +26,10 @@ import { ServerConfig } from './config/server-config';
     DatabaseModule,
     DatabaseModule.forFeature([TicketEntity]),
     LoggerModule,
+    /*
+      공통 모듈의 인증 가드의 의존성을 해결하기 위해 인증 서비스 주입 토큰을 제공한다.
+      티켓 모듈에서 인증 서비스를 등록하고 주입 토큰을 제공한다.
+    */
     ClientsModule.registerAsync([
       {
         name: AUTH_SERVICE,
@@ -33,7 +37,7 @@ import { ServerConfig } from './config/server-config';
           transport: Transport.TCP,
           options: {
             host: ServerConfig.AUTH_HOST,
-            port: ServerConfig.TCP_PORT,
+            port: ServerConfig.AUTH_PORT,
           },
         }),
       },

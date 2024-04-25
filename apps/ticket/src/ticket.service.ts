@@ -53,10 +53,11 @@ export class TicketService {
 
   public async update(
     id: number,
+    user: UserPayload,
     updateTicketDto: UpdateTicketDto,
   ): Promise<TicketDto> {
     const updateTicketEntity = await this.ticketRepository.update(
-      { id },
+      { id, userId: user.id },
       updateTicketDto,
     );
 

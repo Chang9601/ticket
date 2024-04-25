@@ -3,7 +3,7 @@
 export class ServerConfig {
   public static readonly NODE_ENV = 'development'; //get('NODE_ENV').required().asString();
   public static readonly HOST = 'localhost'; //get('HOST').required().asString();
-  public static readonly HTTP_PORT = 3000; //get('HTTP_PORT').required().asPortNumber();
+  public static readonly PORT = 3000; //get('PORT').required().asPortNumber();
   public static readonly TCP_PORT = 3001; //get('TCP_PORT').required().asPortNumber();
 
   public static readonly DB_TYPE = 'mysql';

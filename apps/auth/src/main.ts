@@ -17,7 +17,10 @@ async function bootstrap() {
   app.connectMicroservice({
     transport: Transport.TCP,
     options: {
-      // IP 주소는 0.0.0.0 호스트의 모든 인터페이스에 바인딩하도록 마이크로서비스에게 말한다.
+      /*
+        TCP 마이크로서비스를 수신 대기하려는 호스트와 포트를 지정하지 않으면 TCP 연결이 생성되지 않는다.
+        IP 주소 0.0.0.0은 호스트의 모든 인터페이스에 바인딩하도록 마이크로서비스에게 말한다.
+      */
       host: '0.0.0.0',
       port: ServerConfig.TCP_PORT,
     },
@@ -25,8 +28,8 @@ async function bootstrap() {
 
   app.useLogger(app.get(Logger));
 
-  // TCP 전송 계층을 통해 마이크로서비스를 시작하고 들어오는 이벤트와 요청을 수신 대기한다.
+  /* TCP 전송 계층을 통해 마이크로서비스를 시작하고 들어오는 이벤트와 요청을 수신 대기한다. */
   await app.startAllMicroservices();
-  await app.listen(ServerConfig.HTTP_PORT);
+  await app.listen(ServerConfig.PORT);
 }
 bootstrap();

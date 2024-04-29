@@ -6,7 +6,7 @@ export class UserMapper {
     return new UserEntity({ ...userDto });
   }
 
-  public static toDto(userEntity: UserEntity): UserDto {
-    return new UserDto(userEntity.email);
+  public static toDto({ id, email }: UserEntity): UserDto {
+    return new UserDto(id, email);
   }
 }

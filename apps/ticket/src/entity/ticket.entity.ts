@@ -12,4 +12,7 @@ export class TicketEntity extends AbstractEntity<TicketEntity> {
 
   @Column({ type: 'int', nullable: false })
   userId: number;
+
+  @Column({ type: 'int', nullable: false })
+  fileIds: number[];
 }

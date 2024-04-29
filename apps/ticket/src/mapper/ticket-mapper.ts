@@ -6,11 +6,13 @@ export class TicketMapper {
     return new TicketEntity({ ...ticketDto });
   }
 
-  public static toDto(ticketEntity: TicketEntity): TicketDto {
-    return new TicketDto(
-      ticketEntity.title,
-      ticketEntity.price,
-      ticketEntity.userId,
-    );
+  public static toDto({
+    id,
+    title,
+    price,
+    userId,
+    fileIds,
+  }: TicketEntity): TicketDto {
+    return new TicketDto(id, title, price, userId, fileIds);
   }
 }

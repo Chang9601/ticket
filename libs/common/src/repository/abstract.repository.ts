@@ -8,7 +8,7 @@ import { EntityNotFoundException } from '../exception/entity-not-found.exception
 export abstract class AbstractRepository<T extends AbstractEntity<T>> {
   protected abstract readonly logger: Logger;
 
-  // protected 접근 제한자로 지정되어 있으므로 하위 레포지토리는 추상 레포지토리가 제공하지 않는 기능을 구현할 수 있다.
+  /* protected 접근 제한자로 지정되어 있으므로 하위 레포지토리는 추상 레포지토리가 제공하지 않는 기능을 구현할 수 있다. */
   constructor(protected readonly entityRepository: Repository<T>) {}
 
   public async create(entity: T): Promise<T> {

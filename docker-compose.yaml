@@ -28,7 +28,26 @@ services:
     env_file:
       - ./apps/ticket/.env
     ports:
-      - '3001:3001'
+      - '3002:3002'
+    volumes:
+      - .:/opt/nest_app
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      disable: true
+
+  file:
+    container_name: ticketing-file
+    build:
+      context: .
+      dockerfile: ./apps/file/Dockerfile
+      target: dev
+    command: sh -c '/wait && npm run start:dev file'
+    env_file:
+      - ./apps/file/.env
+    ports:
+      - '3003:3003'
     volumes:
       - .:/opt/nest_app
     depends_on:

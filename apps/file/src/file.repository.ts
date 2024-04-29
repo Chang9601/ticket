@@ -2,10 +2,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { FileEntity } from './file.entity';
-import { AbstractRepository } from '../repository';
+import { AbstractRepository } from '@app/common';
 
-Injectable();
+import { FileEntity } from './entity/file.entity';
+
+@Injectable()
 export class FileRepository extends AbstractRepository<FileEntity> {
   protected readonly logger = new Logger(FileRepository.name);
 

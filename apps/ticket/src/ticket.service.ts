@@ -1,6 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { Observable, map } from 'rxjs';
 
-import { UserPayload } from '@app/common';
+import { FILE_SERVICE, UserPayload } from '@app/common';
 
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { TicketDto } from './dto/ticket.dto';
@@ -12,20 +14,34 @@ import { TicketEntity } from './entity/ticket.entity';
 
 @Injectable()
 export class TicketService {
-  constructor(private readonly ticketRepository: TicketRepository) {}
+  constructor(
+    private readonly ticketRepository: TicketRepository,
+    @Inject(FILE_SERVICE) private readonly fileService: ClientProxy,
+  ) {}
 
   public async create(
     user: UserPayload,
     createTicketDto: CreateTicketDto,
-  ): Promise<TicketDto> {
-    const ticketEntity = new TicketEntity({ ...createTicketDto });
+    files: Array<Express.Multer.File>,
+  ) {
+    console.log('WTF?');
 
-    const savedTicketEntity = await this.ticketRepository.create({
-      ...ticketEntity,
-      userId: user.id,
-    });
+    const w = this.fileService.send('upload', files).pipe(
+      map(async (res) => {
+        console.log(res);
+        const ticketEntity = new TicketEntity({
+          ...TicketMapper.toEntity(createTicketDto),
+          userId: user.id,
+          fileIds: res,
+        });
 
-    return TicketMapper.toDto(savedTicketEntity);
+        const savedTicketEntity = await this.ticketRepository.create(
+          ticketEntity,
+        );
+
+        return TicketMapper.toDto(savedTicketEntity);
+      }),
+    );
   }
 
   public async findOne(id: number): Promise<TicketDto> {

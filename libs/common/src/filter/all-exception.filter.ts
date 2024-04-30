@@ -39,7 +39,7 @@ export class AllExceptionFilter implements ExceptionFilter {
     if (exception instanceof HttpException) {
       const response = exception.getResponse() as HttpExceptionBody;
 
-      // NestJS의 HttpException 클래스의 message 필드를 수정한다.
+      /* NestJS의 HttpException 클래스의 message 필드를 수정한다. */
       exception.message = Code.toMessage[exception.getStatus()];
 
       return ApiResponse.handleFailure(

@@ -12,12 +12,11 @@ export class FileController {
   public async uploadFiles(
     @Payload() payload: UploadFileDto,
   ): Promise<number[]> {
-    console.log('WTSFSFAS');
     return this.fileService.upload(payload);
   }
 
-  @MessagePattern('download')
-  public async downloadFiles(@Payload() payload) {
-    this.fileService.downalod();
-  }
+  // @MessagePattern('download')
+  // public async downloadFiles(@Payload() payload) {
+  //   this.fileService.downalod();
+  // }
 }

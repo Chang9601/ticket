@@ -17,7 +17,7 @@ export class FileService {
 
     for (const file of files) {
       const { originalname: name, path, size, mimetype } = file;
-      const ext = await FileExt.getExtFromFile(name);
+      const ext = await FileExt.getFileExt(name);
 
       const fileEntity = new FileEntity({
         name,
@@ -27,17 +27,11 @@ export class FileService {
         mimetype,
       });
 
-      console.log(fileEntity);
-
       await this.fileRepository.create(fileEntity);
       fileDtos.push(FileMapper.toDto(fileEntity));
     }
 
-    const ids = fileDtos.map((fileDto) => fileDto.id);
-
-    console.log(ids);
-
-    return ids;
+    return fileDtos.map((fileDto) => fileDto.id);
   }
 
   public async downalod(): Promise<void> {

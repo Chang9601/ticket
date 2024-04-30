@@ -1,7 +1,7 @@
 {
   "name": "ticketing",
   "version": "0.0.1",
-  "description": "마이크로서비스 아키텍처를 사용한 티켓팅 서비스",
+  "description": "마이크로서비스 아키텍처를 사용한 매표 서비스",
   "author": "이창섭",
   "private": true,
   "license": "UNLICENSED",

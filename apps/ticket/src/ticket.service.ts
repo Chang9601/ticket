@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { Observable, map } from 'rxjs';
+import { lastValueFrom } from 'rxjs';
 
 import { FILE_SERVICE, UserPayload } from '@app/common';
 
@@ -10,7 +10,6 @@ import { TicketRepository } from './ticket.repository';
 import { TicketNotFoundException } from './exception/ticket-not-found.exception';
 import { TicketMapper } from './mapper/ticket-mapper';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
-import { TicketEntity } from './entity/ticket.entity';
 
 @Injectable()
 export class TicketService {
@@ -24,24 +23,24 @@ export class TicketService {
     createTicketDto: CreateTicketDto,
     files: Array<Express.Multer.File>,
   ) {
-    console.log('WTF?');
+    /*
+     * send()는 Cold Observables이므로 나중에 구독할 응답을 반환하거나
+     * Observable을 시작하려면 subscribe()를 직접 사용하거나
+     * lastValueFrom()을 사용하여 Observable을 프로미스로 변환하여 응답을 기다릴 수 있다.
+     */
+    const response$ = this.fileService.send<Promise<number[]>>('upload', {
+      files,
+    });
 
-    const w = this.fileService.send('upload', files).pipe(
-      map(async (res) => {
-        console.log(res);
-        const ticketEntity = new TicketEntity({
-          ...TicketMapper.toEntity(createTicketDto),
-          userId: user.id,
-          fileIds: res,
-        });
+    const fileIds = await lastValueFrom(response$);
 
-        const savedTicketEntity = await this.ticketRepository.create(
-          ticketEntity,
-        );
+    const ticketEntity = await this.ticketRepository.create({
+      ...TicketMapper.toEntity(createTicketDto),
+      userId: user.id,
+      fileIds,
+    });
 
-        return TicketMapper.toDto(savedTicketEntity);
-      }),
-    );
+    return TicketMapper.toDto(ticketEntity);
   }
 
   public async findOne(id: number): Promise<TicketDto> {

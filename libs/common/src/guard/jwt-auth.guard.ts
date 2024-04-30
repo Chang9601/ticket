@@ -42,7 +42,21 @@ export class JwtAuthGuard implements CanActivate {
      * 두 개의 인자 pattern과 payload를 사용한다.
      * pattern은 @MessagePattern() 데코레이터의 패턴과 일치해야 한다.
      * payload는 원격 마이크로서비스로 전송하려는 메시지이다.
-     * 메서드는 cold Observable을 반환하며 이는 메시지가 전송되기 전에 명시적으로 구독해야 함을 의미한다.
+     * 메서드는 Cold Observable을 반환하며 이는 메시지가 전송되기 전에 명시적으로 구독해야 함을 의미한다.
+     *
+     * Observable은 반응형 프로그래밍에서 기본적인 개념으로 시간에 따라 관찰될 수 있는 일련의 값을 나타낸다.
+     * Observables는 HTTP 요청을 만들거나 이벤트를 청취하거나 데이터 스트림을 처리하는 등의 비동기 작업을 처리하는 데 흔히 사용된다.
+     *
+     * Cold vs. Hot
+     * Cold Observable은 누군가 구독할 때만 값을 생성하기 시작한다.
+     * Cold Observable의 각 구독은 Observable 시퀀스의 별도 실행을 생성한다.
+     * 여러 구독자가 Cold Observable을 구독하는 경우, 각각 독립적으로 전체 값 시퀀스를 수신한다.
+     * Cold Observable의 예로는 HTTP 요청이나 파일에서 읽기 등이 있다.
+     *
+     * Hot Observable은 구독 여부에 관계없이 값을 생성하기 시작한다.
+     * Hot Observable에 대한 구독자는 구독 시점부터 값을 수신하기 시작하며 이전 값을 놓칠 수 있다.
+     * Hot Observable은 여러 구독자 간에 데이터 스트림을 공유하기 위해 일반적으로 사용된다.
+     * Hot Observable의 예로는 마우스 클릭, 키 누름 또는 WebSocket 메시지 등이 있다.
      */
     return (
       this.authService
